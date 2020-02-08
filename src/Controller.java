@@ -3,10 +3,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.File;
@@ -22,6 +19,8 @@ public class Controller {
     private Controller controller = this;
     private int selectedSize = 0; // 0=bytes, 1=kB, 2=MB, 3=GB
     private List<TableContent> actualTable;
+    private String actualPath;
+    private String startPath;
 
     @FXML
     private ChoiceBox fileSdropdown;
@@ -33,6 +32,8 @@ public class Controller {
     private TableColumn sizeColumn;
     @FXML
     private ChoiceBox sizedropdown;
+    @FXML
+    private TextField pathTextField;
 
     @FXML
     public void dropdownClicked() {
@@ -59,11 +60,10 @@ public class Controller {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
                 table.getItems().clear();
 
-                //ds = new DirectoryScanner((String)fileSdropdown.getItems().get((Integer) number2), controller);
-                ds = new DirectoryScanner("/home/basti/Studium_MEGA", controller);
+                //startPath = (String)fileSdropdown.getItems().get((Integer) number2);
+                startPath = "/home/basti/Studium_MEGA";
+                getNewTable(startPath);
 
-                Thread t = new Thread(ds);
-                t.start();
             }
         });
 
@@ -71,12 +71,63 @@ public class Controller {
             TableRow<TableContent> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
-                    TableContent rowData = row.getItem();
-                    System.out.println(rowData);
+                    //TableContent rowData = row.getItem().getName();
+                    //System.out.println(row.getItem().getName());
+                    String tmpPath = actualPath+"/"+row.getItem().getName();
+                    File f = new File(tmpPath);
+
+                    if(f.exists() && f.isDirectory()) {
+                        actualPath = tmpPath;
+                        getNewTable(actualPath);
+                    }
                 }
             });
             return row ;
         });
+    }
+
+    @FXML
+    private void backButtonPressed() {
+        String upperPath = "";
+        int maxDirs = 0;
+        int tmpCnt = 0;
+
+        for(int i=0; i<actualPath.length(); i++) {
+            if(actualPath.charAt(i) == '/') {
+                maxDirs++;
+            }
+        }
+
+        for(int i=0; i<actualPath.length(); i++) {
+            if(actualPath.charAt(i) == '/') {
+                tmpCnt++;
+            }
+            if(tmpCnt < maxDirs) {
+                upperPath += actualPath.charAt(i);
+            }else {
+                break;
+            }
+        }
+        getNewTable(upperPath);
+
+    }
+
+    @FXML
+    private void homeButtonPressed() {
+        getNewTable(startPath);
+    }
+
+    private void getNewTable(String path) {
+        actualPath = path;
+        updatePathTextField(actualPath);
+        ds = new DirectoryScanner(actualPath, controller);
+
+        Thread t = new Thread(ds);
+        t.start();
+    }
+
+    private void updatePathTextField(String path) {
+        pathTextField.setText(path);
     }
 
     private void updateSizeConvertion(int size) {

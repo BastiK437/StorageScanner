@@ -10,6 +10,9 @@ public class DirectoryScanner implements Runnable{
     private long internResult;
 
     public DirectoryScanner(String path, Controller controller) {
+        assert path != null : "[DirectoryScanner] Path can not be null!";
+        assert controller != null : "[DirectoryScanner] Controller can not be null!";
+
         this.path = path;
         this.controller = controller;
     }
@@ -17,6 +20,11 @@ public class DirectoryScanner implements Runnable{
     @Override
     public void run() {
         File file = new File(path);
+
+        if(file.isFile() || !file.exists()) {
+            System.out.printf("file or not existing\n");
+            return;
+        }
 
         File content[] = file.listFiles();
         tContent = new ArrayList<>();
@@ -54,7 +62,7 @@ public class DirectoryScanner implements Runnable{
                             } else {
                                 long space = getDirSpace(f, entrance);
                                 result += space;
-                                internResult += space;
+                                //internResult += space;
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -69,7 +77,7 @@ public class DirectoryScanner implements Runnable{
             result += dir.length();
         }
 
-        tContent.get(entrance).setSize(result);
+        tContent.get(entrance).setSize(internResult);
         controller.updateTable(tContent);
 
         return result;

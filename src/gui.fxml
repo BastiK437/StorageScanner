@@ -82,7 +82,7 @@
                   </HBox>
                   <HBox prefHeight="57.0" prefWidth="640.0">
                      <children>
-                        <Button mnemonicParsing="false">
+                        <Button mnemonicParsing="false" onAction="#homeButtonPressed">
                            <graphic>
                               <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -94,7 +94,7 @@
                               <Insets left="10.0" top="10.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false">
+                        <Button mnemonicParsing="false" onAction="#backButtonPressed">
                            <graphic>
                               <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -105,6 +105,7 @@
                            <HBox.margin>
                               <Insets bottom="10.0" left="10.0" top="10.0" />
                            </HBox.margin>
+
                         </Button>
                         <ImageView fitHeight="30.0" fitWidth="30.0">
                            <image>
@@ -114,7 +115,7 @@
                               <Insets bottom="10.0" left="10.0" top="5.0" />
                            </HBox.margin>
                         </ImageView>
-                        <TextField prefHeight="26.0" prefWidth="503.0">
+                        <TextField fx:id="pathTextField" prefHeight="26.0" prefWidth="503.0">
                            <HBox.margin>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </HBox.margin>
