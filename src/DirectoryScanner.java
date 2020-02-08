@@ -35,6 +35,10 @@ public class DirectoryScanner implements Runnable{
             tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) );
             internResult = 0;
             getDirSpace(content[i], i);
+            if(Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
 
         controller.sortTable();
@@ -49,6 +53,10 @@ public class DirectoryScanner implements Runnable{
             File fileList[] = dir.listFiles();
             if(fileList != null) {
                 for (File f : fileList) {
+                    if(Thread.currentThread().isInterrupted()) {
+                        Thread.currentThread().interrupt();
+                        return 0;
+                    }
                     if (f.isFile()) {
                         result += f.length();
                         internResult += f.length();
@@ -58,7 +66,7 @@ public class DirectoryScanner implements Runnable{
                         try {
                             canon = f.getParent() == null ? f : new File(f.getParentFile().getCanonicalFile(), f.getName());
                             if (!canon.getCanonicalFile().equals(canon.getAbsoluteFile())) {
-                                System.out.printf("Dirctory '%s' is a symlink!\n", f.getPath());
+                                //System.out.printf("Dirctory '%s' is a symlink!\n", f.getPath());
                             } else {
                                 long space = getDirSpace(f, entrance);
                                 result += space;

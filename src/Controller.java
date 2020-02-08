@@ -21,6 +21,7 @@ public class Controller {
     private List<TableContent> actualTable;
     private String actualPath;
     private String startPath;
+    private Thread searchThread;
 
     @FXML
     private ChoiceBox fileSdropdown;
@@ -98,14 +99,18 @@ public class Controller {
             }
         }
 
-        for(int i=0; i<actualPath.length(); i++) {
-            if(actualPath.charAt(i) == '/') {
-                tmpCnt++;
-            }
-            if(tmpCnt < maxDirs) {
-                upperPath += actualPath.charAt(i);
-            }else {
-                break;
+        if(maxDirs == 1) {
+            upperPath = "/";
+        }else {
+            for (int i = 0; i < actualPath.length(); i++) {
+                if (actualPath.charAt(i) == '/') {
+                    tmpCnt++;
+                }
+                if (tmpCnt < maxDirs) {
+                    upperPath += actualPath.charAt(i);
+                } else {
+                    break;
+                }
             }
         }
         getNewTable(upperPath);
@@ -114,16 +119,33 @@ public class Controller {
 
     @FXML
     private void homeButtonPressed() {
+        if(searchThread != null && searchThread.isAlive()) {
+            try {
+                searchThread.interrupt();
+                searchThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         getNewTable(startPath);
     }
 
     private void getNewTable(String path) {
+        if(searchThread != null && searchThread.isAlive()) {
+            try {
+                searchThread.interrupt();
+                searchThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         actualPath = path;
         updatePathTextField(actualPath);
         ds = new DirectoryScanner(actualPath, controller);
 
-        Thread t = new Thread(ds);
-        t.start();
+        searchThread = new Thread(ds);
+        searchThread.start();
     }
 
     private void updatePathTextField(String path) {

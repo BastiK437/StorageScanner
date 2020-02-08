@@ -18,7 +18,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+<VBox prefHeight="700.0" prefWidth="829.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -61,9 +61,9 @@
     </MenuBar>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <children>
-            <VBox prefHeight="438.0" prefWidth="640.0">
+            <VBox prefHeight="658.0" prefWidth="829.0">
                <children>
-                  <HBox prefHeight="44.0" prefWidth="640.0">
+                  <HBox prefHeight="0.0" prefWidth="509.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Disk">
                            <HBox.margin>
@@ -122,12 +122,12 @@
                         </TextField>
                      </children>
                   </HBox>
-                  <TableView fx:id="table" prefHeight="337.0" prefWidth="640.0">
+                  <TableView fx:id="table" prefHeight="560.0" prefWidth="750.0">
                     <columns>
                       <TableColumn fx:id="nameColumn" prefWidth="446.0" text="Content" />
-                      <TableColumn fx:id="sizeColumn" minWidth="0.0" prefWidth="193.0">
+                      <TableColumn fx:id="sizeColumn" minWidth="0.0" prefWidth="382.0">
                            <graphic>
-                              <ChoiceBox fx:id="sizedropdown" prefHeight="26.0" prefWidth="215.0" />
+                              <ChoiceBox fx:id="sizedropdown" prefHeight="26.0" prefWidth="377.0" />
                            </graphic></TableColumn>
                     </columns>
                   </TableView>
