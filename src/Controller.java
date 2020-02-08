@@ -62,8 +62,8 @@ public class Controller {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
                 table.getItems().clear();
 
-                //startPath = (String)fileSdropdown.getItems().get((Integer) number2);
-                startPath = "/home/basti/Studium_MEGA";
+                startPath = (String)fileSdropdown.getItems().get((Integer) number2);
+                //startPath = "/home/basti/Studium_MEGA";
                 getNewTable(startPath);
 
             }
