@@ -74,7 +74,13 @@ public class Controller {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     //TableContent rowData = row.getItem().getName();
                     //System.out.println(row.getItem().getName());
-                    String tmpPath = actualPath+"/"+row.getItem().getName();
+                    String tmpPath;
+                    if(actualPath.equals("/")) {
+                        tmpPath  = actualPath+row.getItem().getName();
+                    }else {
+                        tmpPath = actualPath+"/"+row.getItem().getName();
+                    }
+
                     File f = new File(tmpPath);
 
                     if(f.exists() && f.isDirectory()) {

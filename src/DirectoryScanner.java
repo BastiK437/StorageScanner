@@ -8,6 +8,7 @@ public class DirectoryScanner implements Runnable{
     private List<TableContent> tContent;
     private Controller controller;
     private long internResult;
+    private int printCnt;
 
     public DirectoryScanner(String path, Controller controller) {
         assert path != null : "[DirectoryScanner] Path can not be null!";
@@ -15,6 +16,7 @@ public class DirectoryScanner implements Runnable{
 
         this.path = path;
         this.controller = controller;
+        printCnt = 0;
     }
 
     @Override
@@ -34,13 +36,14 @@ public class DirectoryScanner implements Runnable{
             //tContent[i] = new TableContent(content[i].getName(), getDirSpace(content[i], i));
             tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) );
             internResult = 0;
-            getDirSpace(content[i], i);
+            long tmpSize = getDirSpace(content[i], i);
+            tContent.get(i).setSize(tmpSize);
             if(Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 break;
             }
         }
-
+        controller.updateTable(tContent);
         controller.sortTable();
 
         System.out.printf("Scan finished\n");
@@ -85,8 +88,11 @@ public class DirectoryScanner implements Runnable{
             result += dir.length();
         }
 
-        tContent.get(entrance).setSize(internResult);
-        controller.updateTable(tContent);
+        if(printCnt%1000 == 0) {
+            tContent.get(entrance).setSize(internResult);
+            controller.updateTable(tContent);
+        }
+        printCnt++;
 
         return result;
     }
