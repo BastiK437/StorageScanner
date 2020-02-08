@@ -63,6 +63,12 @@ public class TableContent implements Comparable{
             return 0;
         }
         TableContent tc = (TableContent) o;
-        return (int)(tc.sizeLong - this.sizeLong);
+        if (tc.sizeLong > this.sizeLong) {
+            return 1;
+        }else if( tc.sizeLong == this.sizeLong) {
+            return 0;
+        }else{
+            return -1;
+        }
     }
 }

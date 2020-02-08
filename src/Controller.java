@@ -22,6 +22,7 @@ public class Controller {
     private String actualPath;
     private String startPath;
     private Thread searchThread;
+    private boolean tableReady = true;
 
     @FXML
     private ChoiceBox fileSdropdown;
@@ -175,15 +176,18 @@ public class Controller {
         Platform.runLater(new Runnable(){
             @Override
             public void run() {
-
+                while(!tableReady){}
+                tableReady = false;
+                List<TableContent> tmpList = new ArrayList<>(actualTable);
                 table.getItems().clear();
-                for (TableContent content: actualTable) {
+                for (TableContent content: tmpList) {
                     if(content == null) {
                         break;
                     }else{
                         table.getItems().add(content);
                     }
                 }
+                tableReady = true;
                 //table.scrollTo(actualTable.size()-1);
             }
         });

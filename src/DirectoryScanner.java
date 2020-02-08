@@ -61,22 +61,14 @@ public class DirectoryScanner implements Runnable{
                         return 0;
                     }
                     if (f.isFile()) {
-                        result += f.length();
-                        internResult += f.length();
+                        if( !isSymLink(f) ) {
+                            result += f.length();
+                            internResult += f.length();
+                        }
                     } else if(f.isDirectory() ){
-                        // check if directory is a symlink, if it is, skip it
-                        File canon = null;
-                        try {
-                            canon = f.getParent() == null ? f : new File(f.getParentFile().getCanonicalFile(), f.getName());
-                            if (!canon.getCanonicalFile().equals(canon.getAbsoluteFile())) {
-                                //System.out.printf("Dirctory '%s' is a symlink!\n", f.getPath());
-                            } else {
-                                long space = getDirSpace(f, entrance);
-                                result += space;
-                                //internResult += space;
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        if( !isSymLink(f) ) {
+                            long space = getDirSpace(f, entrance);
+                            result += space;
                         }
                     }
                 }
@@ -85,7 +77,9 @@ public class DirectoryScanner implements Runnable{
                 return 0;
             }
         }else{
-            result += dir.length();
+            if( !isSymLink(dir) ) {
+                result += dir.length();
+            }
         }
 
         if(printCnt%1000 == 0) {
@@ -98,4 +92,20 @@ public class DirectoryScanner implements Runnable{
     }
 
 
+    private boolean isSymLink(File f) {
+        boolean result = false;
+        // check if directory is a symlink, if it is, skip it
+        File canon = null;
+        try {
+            canon = f.getParent() == null ? f : new File(f.getParentFile().getCanonicalFile(), f.getName());
+            if (!canon.getCanonicalFile().equals(canon.getAbsoluteFile())) {
+                result = true;
+            } else {
+                result = false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }
