@@ -1,6 +1,4 @@
-import javafx.scene.control.Tab;
-
-import java.text.DecimalFormat;
+package supportClasses;
 
 public class TableContent implements Comparable{
 

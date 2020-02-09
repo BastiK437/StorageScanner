@@ -1,3 +1,5 @@
+package control;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -5,9 +7,11 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import supportClasses.CheckAvailableFileSystems;
+import supportClasses.DirectoryScanner;
+import supportClasses.TableContent;
 
 import java.io.File;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 public class Controller {
@@ -62,8 +66,8 @@ public class Controller {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
                 table.getItems().clear();
 
-                startPath = (String)fileSdropdown.getItems().get((Integer) number2);
-                //startPath = "/home/basti/Studium_MEGA";
+                //startPath = (String)fileSdropdown.getItems().get((Integer) number2);
+                startPath = "/home/basti/Studium_MEGA";
                 getNewTable(startPath);
 
             }
@@ -73,7 +77,7 @@ public class Controller {
             TableRow<TableContent> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
-                    //TableContent rowData = row.getItem().getName();
+                    //supportClasses.TableContent rowData = row.getItem().getName();
                     //System.out.println(row.getItem().getName());
                     String tmpPath;
                     if(actualPath.equals("/")) {

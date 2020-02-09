@@ -1,11 +1,12 @@
+package view;
+
+import control.Controller;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import javax.swing.filechooser.FileSystemView;
-import java.io.File;
 import java.io.IOException;
 
 import static java.lang.System.exit;
@@ -26,7 +27,7 @@ public class Main extends Application{
 
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("gui.fxml"));
+            root = FXMLLoader.load(getClass().getResource("../fxml/gui.fxml"));
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,3 +1,7 @@
+package supportClasses;
+
+import control.Controller;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,8 +15,8 @@ public class DirectoryScanner implements Runnable{
     private int printCnt;
 
     public DirectoryScanner(String path, Controller controller) {
-        assert path != null : "[DirectoryScanner] Path can not be null!";
-        assert controller != null : "[DirectoryScanner] Controller can not be null!";
+        assert path != null : "[supportClasses.DirectoryScanner] Path can not be null!";
+        assert controller != null : "[supportClasses.DirectoryScanner] control.Controller can not be null!";
 
         this.path = path;
         this.controller = controller;
@@ -33,7 +37,7 @@ public class DirectoryScanner implements Runnable{
 
         for(int i=0; i<content.length; i++){
             // System.out.printf("Name: %s\n", content[i].getName());
-            //tContent[i] = new TableContent(content[i].getName(), getDirSpace(content[i], i));
+            //tContent[i] = new supportClasses.TableContent(content[i].getName(), getDirSpace(content[i], i));
             tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) );
             internResult = 0;
             long tmpSize = getDirSpace(content[i], i);
