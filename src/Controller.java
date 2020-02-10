@@ -1,5 +1,3 @@
-package control;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -7,9 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import supportClasses.CheckAvailableFileSystems;
-import supportClasses.DirectoryScanner;
-import supportClasses.TableContent;
 
 import java.io.File;
 import java.util.*;

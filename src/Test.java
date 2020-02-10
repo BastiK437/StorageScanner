@@ -1,7 +1,3 @@
-package test;
-
-import supportClasses.CheckAvailableFileSystems;
-
 import java.io.File;
 
 public class Test {

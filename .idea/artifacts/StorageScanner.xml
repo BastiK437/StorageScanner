@@ -1,15 +1,22 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="StorageScanner">
+  <artifact type="javafx" name="StorageScanner">
     <output-path>$PROJECT_DIR$/out/artifacts/StorageScanner</output-path>
-    <root id="archive" name="StorageScanner.jar">
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="Main" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="title" value="StorageScanner" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
       <element id="archive" name="StorageScanner.jar">
         <element id="module-output" name="StorageScanner" />
         <element id="directory" name="META-INF">
           <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
         </element>
-      </element>
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
       </element>
     </root>
   </artifact>

@@ -1,5 +1,3 @@
-package supportClasses;
-
 public class TableContent implements Comparable{
 
     private String name;
