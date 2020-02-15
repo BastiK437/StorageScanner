@@ -1,7 +1,9 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DirectoryScanner implements Runnable{
     private String path;
@@ -9,6 +11,7 @@ public class DirectoryScanner implements Runnable{
     private Controller controller;
     private long internResult;
     private int printCnt;
+    private Map<String, Long> scannedDirs;
 
     public DirectoryScanner(String path, Controller controller) {
         assert path != null : "[supportClasses.DirectoryScanner] Path can not be null!";
@@ -17,6 +20,7 @@ public class DirectoryScanner implements Runnable{
         this.path = path;
         this.controller = controller;
         printCnt = 0;
+        scannedDirs = new HashMap<>();
     }
 
     @Override
@@ -32,12 +36,15 @@ public class DirectoryScanner implements Runnable{
         tContent = new ArrayList<>();
 
         for(int i=0; i<content.length; i++){
-            // System.out.printf("Name: %s\n", content[i].getName());
-            //tContent[i] = new supportClasses.TableContent(content[i].getName(), getDirSpace(content[i], i));
-            tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) );
             internResult = 0;
-            long tmpSize = getDirSpace(content[i], i);
-            tContent.get(i).setSize(tmpSize);
+            tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) ); // add and create table content to list
+            if(content[i].isDirectory() ) {
+                tContent.get(i).setSize(getDirSpace(content[i], i));        // set size of current folder
+            }else{
+                tContent.get(i).setSize(content[i].length());
+            }
+
+            //scannedDirs.put(content[i].getPath(), tContent.get(i).getSizeLong());
             if(Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 break;
@@ -46,40 +53,57 @@ public class DirectoryScanner implements Runnable{
         controller.updateTable(tContent);
         controller.sortTable();
 
+
+        for(Map.Entry<String, Long> entry : scannedDirs.entrySet()) {
+            String key = entry.getKey();
+            Long value = entry.getValue();
+
+            //System.out.printf("Key: %s, Value: %d\n", key, value);
+        }
         System.out.printf("Scan finished\n");
     }
 
     public long getDirSpace(File dir, int entrance) {
         long result = 0;
 
-        if(dir.isDirectory()) {
-            File fileList[] = dir.listFiles();
-            if(fileList != null) {
-                for (File f : fileList) {
-                    if(Thread.currentThread().isInterrupted()) {
-                        Thread.currentThread().interrupt();
-                        return 0;
+        File fileList[] = dir.listFiles();
+        if(fileList != null) {
+            for (File f : fileList) {
+                if(Thread.currentThread().isInterrupted()) {
+                    Thread.currentThread().interrupt();
+                    return 0;
+                }
+                if (f.isFile()) {
+                    if( !isSymLink(f) ) {
+                        result += f.length();
+                        internResult += f.length();
                     }
-                    if (f.isFile()) {
-                        if( !isSymLink(f) ) {
-                            result += f.length();
-                            internResult += f.length();
+                } else if(f.isDirectory() ){
+                    if( !isSymLink(f) ) {
+                        //System.out.printf("File: %s, Map: \n", f.getPath());
+
+                        for(Map.Entry<String, Long> entry : scannedDirs.entrySet()) {
+                            String key = entry.getKey();
+                            Long value = entry.getValue();
+
+                            //System.out.printf("Key: %s, Value: %d\n", key, value);
                         }
-                    } else if(f.isDirectory() ){
-                        if( !isSymLink(f) ) {
+                        if (scannedDirs.containsKey(f.getPath())){
+                            result += scannedDirs.get(f.getPath());
+                            System.out.printf("Result already calculated\n");
+                        }else{
+                            //System.out.printf("getDirSpace from dir: %s\n", dir.getPath());
                             long space = getDirSpace(f, entrance);
+                            scannedDirs.put(f.getPath(), space);
                             result += space;
                         }
+
                     }
                 }
-            }else {
-                System.out.printf("Directory '%s' is empty!\n", dir.getPath());
-                return 0;
             }
-        }else{
-            if( !isSymLink(dir) ) {
-                result += dir.length();
-            }
+        }else {
+            System.out.printf("Directory '%s' is empty!\n", dir.getPath());
+            return 0;
         }
 
         if(printCnt%1000 == 0) {
@@ -94,7 +118,7 @@ public class DirectoryScanner implements Runnable{
 
     private boolean isSymLink(File f) {
         boolean result = false;
-        // check if directory is a symlink, if it is, skip it
+        // check if file or directory is a symlink, if it is, skip it
         File canon = null;
         try {
             canon = f.getParent() == null ? f : new File(f.getParentFile().getCanonicalFile(), f.getName());

@@ -61,7 +61,7 @@
     </MenuBar>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <children>
-            <VBox prefHeight="658.0" prefWidth="829.0">
+            <VBox prefHeight="671.0" prefWidth="829.0">
                <children>
                   <HBox prefHeight="0.0" prefWidth="509.0">
                      <children>
@@ -131,6 +131,7 @@
                            </graphic></TableColumn>
                     </columns>
                   </TableView>
+                  <Text fx:id="versionText" strokeType="OUTSIDE" strokeWidth="0.0" text="version Text" textAlignment="RIGHT" wrappingWidth="828.7294921875" />
                </children>
             </VBox>
       </children>

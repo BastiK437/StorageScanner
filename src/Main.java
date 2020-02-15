@@ -24,7 +24,7 @@ public class Main extends Application{
 
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("gui.fxml"));
+            root = FXMLLoader.load(getClass().getResource("StorageScanner.fxml"));
 
         } catch (IOException e) {
             e.printStackTrace();

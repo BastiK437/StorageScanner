@@ -5,11 +5,14 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 
 import java.io.File;
 import java.util.*;
 
 public class Controller {
+    private String VERSION = "v1.0";
+
     private File partitions[];
     private String partitionPaths[];
     private boolean checkboxInitialized = false;
@@ -35,9 +38,13 @@ public class Controller {
     private ChoiceBox sizedropdown;
     @FXML
     private TextField pathTextField;
+    @FXML
+    private Text versionText;
 
     @FXML
-    public void dropdownClicked() {
+    public void initialize() {
+        versionText.setText(VERSION);
+
         initCheckbox();
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -62,7 +69,8 @@ public class Controller {
                 table.getItems().clear();
 
                 //startPath = (String)fileSdropdown.getItems().get((Integer) number2);
-                startPath = "/home/basti/Studium_MEGA";
+                startPath = "/home/basti/";
+                startPath = "/home/basti/Studium_MEGA/Semester_5/CPS";
                 getNewTable(startPath);
 
             }
@@ -91,6 +99,11 @@ public class Controller {
             });
             return row ;
         });
+    }
+
+    @FXML
+    public void dropdownClicked() {
+
     }
 
     @FXML
