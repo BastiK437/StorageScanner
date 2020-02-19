@@ -11,7 +11,6 @@ public class DirectoryScanner implements Runnable{
     private Controller controller;
     private long internResult;
     private int printCnt;
-    private Map<String, Long> scannedDirs;
 
     public DirectoryScanner(String path, Controller controller) {
         assert path != null : "[supportClasses.DirectoryScanner] Path can not be null!";
@@ -20,7 +19,7 @@ public class DirectoryScanner implements Runnable{
         this.path = path;
         this.controller = controller;
         printCnt = 0;
-        scannedDirs = new HashMap<>();
+
     }
 
     @Override
@@ -39,12 +38,17 @@ public class DirectoryScanner implements Runnable{
             internResult = 0;
             tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) ); // add and create table content to list
             if(content[i].isDirectory() ) {
-                tContent.get(i).setSize(getDirSpace(content[i], i));        // set size of current folder
+                if (controller.containsKey(content[i].getPath())){
+                    tContent.get(i).setSize(controller.getKeySize(content[i].getPath() ) );
+                }else {
+                    tContent.get(i).setSize(getDirSpace(content[i], i));        // set size of current folder
+                    controller.putPath(content[i].getPath(), tContent.get(i).getSizeLong());
+                }
             }else{
                 tContent.get(i).setSize(content[i].length());
             }
 
-            //scannedDirs.put(content[i].getPath(), tContent.get(i).getSizeLong());
+            //
             if(Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 break;
@@ -53,13 +57,6 @@ public class DirectoryScanner implements Runnable{
         controller.updateTable(tContent);
         controller.sortTable();
 
-
-        for(Map.Entry<String, Long> entry : scannedDirs.entrySet()) {
-            String key = entry.getKey();
-            Long value = entry.getValue();
-
-            //System.out.printf("Key: %s, Value: %d\n", key, value);
-        }
         System.out.printf("Scan finished\n");
     }
 
@@ -81,20 +78,14 @@ public class DirectoryScanner implements Runnable{
                 } else if(f.isDirectory() ){
                     if( !isSymLink(f) ) {
                         //System.out.printf("File: %s, Map: \n", f.getPath());
+                        //printMap();
 
-                        for(Map.Entry<String, Long> entry : scannedDirs.entrySet()) {
-                            String key = entry.getKey();
-                            Long value = entry.getValue();
-
-                            //System.out.printf("Key: %s, Value: %d\n", key, value);
-                        }
-                        if (scannedDirs.containsKey(f.getPath())){
-                            result += scannedDirs.get(f.getPath());
-                            System.out.printf("Result already calculated\n");
+                        if (controller.containsKey(f.getPath())){
+                            result += controller.getKeySize(f.getPath());
                         }else{
                             //System.out.printf("getDirSpace from dir: %s\n", dir.getPath());
                             long space = getDirSpace(f, entrance);
-                            scannedDirs.put(f.getPath(), space);
+                            controller.putPath(f.getPath(), space);
                             result += space;
                         }
 
@@ -132,4 +123,6 @@ public class DirectoryScanner implements Runnable{
         }
         return result;
     }
+
+
 }

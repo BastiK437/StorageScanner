@@ -11,12 +11,11 @@ import java.io.File;
 import java.util.*;
 
 public class Controller {
-    private String VERSION = "v1.0";
+    private String VERSION = "v1.01";
+    public boolean DEBUG = true;
 
     private File partitions[];
     private String partitionPaths[];
-    private boolean checkboxInitialized = false;
-    private static int selectedPartition = 0;
     private DirectoryScanner ds;
     private Controller controller = this;
     private int selectedSize = 0; // 0=bytes, 1=kB, 2=MB, 3=GB
@@ -25,6 +24,9 @@ public class Controller {
     private String startPath;
     private Thread searchThread;
     private boolean tableReady = true;
+
+    // scanner specific
+    private Map<String, Long> scannedDirs;
 
     @FXML
     private ChoiceBox fileSdropdown;
@@ -43,9 +45,14 @@ public class Controller {
 
     @FXML
     public void initialize() {
+        // init fxml objects
         versionText.setText(VERSION);
 
+        // init functions
         initCheckbox();
+
+        // init objects
+        scannedDirs = new HashMap<>();
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
@@ -229,5 +236,30 @@ public class Controller {
 
     public int getselectedSize() {
         return selectedSize;
+    }
+
+    public void putPath(String path, long size ){
+        if( !scannedDirs.containsKey(path) ){
+            scannedDirs.put(path, size);
+        }
+    }
+
+    public void printMap() {
+        for(Map.Entry<String, Long> entry : scannedDirs.entrySet()) {
+            String key = entry.getKey();
+            Long value = entry.getValue();
+
+            System.out.printf("Key: %s, Value: %d\n", key, value);
+        }
+
+        System.out.printf("Map size: %d\n", scannedDirs.size());
+    }
+
+    public boolean containsKey( String key ){
+        return scannedDirs.containsKey(key);
+    }
+
+    public long getKeySize( String key ) {
+        return scannedDirs.get(key);
     }
 }
