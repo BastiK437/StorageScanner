@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.*;
 
 public class Controller {
-    private String VERSION = "v1.01";
+    private String VERSION = "v1.1";
     public boolean DEBUG = true;
 
     private File partitions[];
