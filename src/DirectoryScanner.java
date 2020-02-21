@@ -38,14 +38,23 @@ public class DirectoryScanner implements Runnable{
         int indexCnt = 0;
         for(int i=0; i<content.length; i++){
             internResult = 0;
-            if(content[i].getName().startsWith(".")){
-                System.out.printf("Hidden element\n");
-                if(ignoreHiddenElements) {
-                    continue;
-                }
+
+            // check if element is a hidden element, aka starts with a dot '.'
+            if(ignoreHiddenElements && content[i].getName().startsWith(".")){
+                continue;
             }
-            tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) ); // add and create table content to list
+
+            // check if it is the proc/ dir
+            if(content[i].getName().equals("proc")){
+                continue;
+            }
+
+            // add entry with size 0 to list
+            tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) );
+
+            // check wheter the element is a file or a directory, if it is a file, directly set size, else call getDirSpace()
             if(content[i].isDirectory() ) {
+                // check if the directory was already scanned
                 if (controller.containsKey(content[i].getPath()) && !reloadDirs){
                     tContent.get(indexCnt).setSize(controller.getKeySize(content[i].getPath() ) );
                 }else {
@@ -57,7 +66,7 @@ public class DirectoryScanner implements Runnable{
             }
             indexCnt++;
 
-            //
+            // check for interruption on the thread
             if(Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 break;
@@ -72,11 +81,8 @@ public class DirectoryScanner implements Runnable{
     public long getDirSpace(File dir, int entrance) {
         long result = 0;
 
-        if(dir.getName().startsWith(".")){
-            System.out.printf("Hidden element\n");
-            if(ignoreHiddenElements) {
-                return 0;
-            }
+        if(ignoreHiddenElements && dir.getName().startsWith(".")){
+            return 0;
         }
 
         File fileList[] = dir.listFiles();
@@ -93,9 +99,6 @@ public class DirectoryScanner implements Runnable{
                     }
                 } else if(f.isDirectory() ){
                     if( !isSymLink(f) ) {
-                        //System.out.printf("File: %s, Map: \n", f.getPath());
-                        //printMap();
-
                         if (controller.containsKey(f.getPath()) && !reloadDirs){
                             result += controller.getKeySize(f.getPath());
                         }else{
@@ -104,7 +107,6 @@ public class DirectoryScanner implements Runnable{
                             controller.putPath(f.getPath(), space);
                             result += space;
                         }
-
                     }
                 }
             }
@@ -118,7 +120,6 @@ public class DirectoryScanner implements Runnable{
             controller.updateTable(tContent);
         }
         printCnt++;
-
         return result;
     }
 
