@@ -1,9 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DirectoryScanner implements Runnable{
     private String path;
@@ -11,15 +9,18 @@ public class DirectoryScanner implements Runnable{
     private Controller controller;
     private long internResult;
     private int printCnt;
+    private boolean reloadDirs;
+    private boolean ignoreHiddenElements;
 
-    public DirectoryScanner(String path, Controller controller) {
+    public DirectoryScanner(String path, Controller controller, boolean reloadDirs, boolean ignoreHiddenElements) {
         assert path != null : "[supportClasses.DirectoryScanner] Path can not be null!";
         assert controller != null : "[supportClasses.DirectoryScanner] control.Controller can not be null!";
 
         this.path = path;
         this.controller = controller;
         printCnt = 0;
-
+        this.reloadDirs = reloadDirs;
+        this.ignoreHiddenElements = ignoreHiddenElements;
     }
 
     @Override
@@ -34,19 +35,27 @@ public class DirectoryScanner implements Runnable{
         File content[] = file.listFiles();
         tContent = new ArrayList<>();
 
+        int indexCnt = 0;
         for(int i=0; i<content.length; i++){
             internResult = 0;
+            if(content[i].getName().startsWith(".")){
+                System.out.printf("Hidden element\n");
+                if(ignoreHiddenElements) {
+                    continue;
+                }
+            }
             tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) ); // add and create table content to list
             if(content[i].isDirectory() ) {
-                if (controller.containsKey(content[i].getPath())){
-                    tContent.get(i).setSize(controller.getKeySize(content[i].getPath() ) );
+                if (controller.containsKey(content[i].getPath()) && !reloadDirs){
+                    tContent.get(indexCnt).setSize(controller.getKeySize(content[i].getPath() ) );
                 }else {
-                    tContent.get(i).setSize(getDirSpace(content[i], i));        // set size of current folder
-                    controller.putPath(content[i].getPath(), tContent.get(i).getSizeLong());
+                    tContent.get(indexCnt).setSize(getDirSpace(content[i], indexCnt));        // set size of current folder
+                    controller.putPath(content[indexCnt].getPath(), tContent.get(indexCnt).getSizeLong());
                 }
             }else{
-                tContent.get(i).setSize(content[i].length());
+                tContent.get(indexCnt).setSize(content[i].length());
             }
+            indexCnt++;
 
             //
             if(Thread.currentThread().isInterrupted()) {
@@ -62,6 +71,13 @@ public class DirectoryScanner implements Runnable{
 
     public long getDirSpace(File dir, int entrance) {
         long result = 0;
+
+        if(dir.getName().startsWith(".")){
+            System.out.printf("Hidden element\n");
+            if(ignoreHiddenElements) {
+                return 0;
+            }
+        }
 
         File fileList[] = dir.listFiles();
         if(fileList != null) {
@@ -80,7 +96,7 @@ public class DirectoryScanner implements Runnable{
                         //System.out.printf("File: %s, Map: \n", f.getPath());
                         //printMap();
 
-                        if (controller.containsKey(f.getPath())){
+                        if (controller.containsKey(f.getPath()) && !reloadDirs){
                             result += controller.getKeySize(f.getPath());
                         }else{
                             //System.out.printf("getDirSpace from dir: %s\n", dir.getPath());

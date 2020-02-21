@@ -24,6 +24,7 @@ public class Controller {
     private String startPath;
     private Thread searchThread;
     private boolean tableReady = true;
+    private boolean ignoreHiddenElements;
 
     // scanner specific
     private Map<String, Long> scannedDirs;
@@ -42,9 +43,14 @@ public class Controller {
     private TextField pathTextField;
     @FXML
     private Text versionText;
+    @FXML
+    private CheckBox hiddenElementsCheckbox;
 
     @FXML
     public void initialize() {
+        // init variables
+        ignoreHiddenElements = false;
+
         // init fxml objects
         versionText.setText(VERSION);
 
@@ -78,7 +84,7 @@ public class Controller {
                 //startPath = (String)fileSdropdown.getItems().get((Integer) number2);
                 startPath = "/home/basti/";
                 startPath = "/home/basti/Studium_MEGA/Semester_5/CPS";
-                getNewTable(startPath);
+                getNewTable(startPath, false);
 
             }
         });
@@ -100,17 +106,30 @@ public class Controller {
 
                     if(f.exists() && f.isDirectory()) {
                         actualPath = tmpPath;
-                        getNewTable(actualPath);
+                        getNewTable(actualPath, false);
                     }
                 }
             });
             return row ;
+        });
+
+        hiddenElementsCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                ignoreHiddenElements = newValue;
+                getNewTable(actualPath, true);
+            }
         });
     }
 
     @FXML
     public void dropdownClicked() {
 
+    }
+
+    @FXML
+    private void reloadButtonPressed() {
+        getNewTable(actualPath, true);
     }
 
     @FXML
@@ -139,7 +158,7 @@ public class Controller {
                 }
             }
         }
-        getNewTable(upperPath);
+        getNewTable(upperPath, false);
 
     }
 
@@ -153,10 +172,10 @@ public class Controller {
                 e.printStackTrace();
             }
         }
-        getNewTable(startPath);
+        getNewTable(startPath, false);
     }
 
-    private void getNewTable(String path) {
+    private void getNewTable(String path, boolean reload) {
         if(searchThread != null && searchThread.isAlive()) {
             try {
                 searchThread.interrupt();
@@ -168,7 +187,7 @@ public class Controller {
 
         actualPath = path;
         updatePathTextField(actualPath);
-        ds = new DirectoryScanner(actualPath, controller);
+        ds = new DirectoryScanner(actualPath, controller, reload, ignoreHiddenElements);
 
         searchThread = new Thread(ds);
         searchThread.start();
