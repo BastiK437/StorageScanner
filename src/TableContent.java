@@ -2,14 +2,35 @@ public class TableContent implements Comparable{
 
     private String name;
     private String size;
+    private int files;
+    private int dirs;
     private long sizeLong;
     private int convertion;
+
+    public void setFiles(int files) {
+        this.files = files;
+    }
+
+    public void setDirs(int dirs) {
+        this.dirs = dirs;
+    }
+
+    public int getFiles() {
+        return files;
+    }
+
+    public int getDirs() {
+        return dirs;
+    }
 
     public TableContent(String name, long size, int convertion){
         this.name = name;
         this.sizeLong = sizeLong;
         this.convertion = convertion;
         updateSize(size);
+
+        files = 0;
+        dirs = 0;
     }
 
     public long getSizeLong() {
@@ -46,6 +67,7 @@ public class TableContent implements Comparable{
                 size = String.format("%,.2f", sizeDouble/1073741824);    // 2^30
                 break;
         }
+        size += String.format(" %d, %d", files, dirs);
     }
 
     public String getName() {
@@ -66,5 +88,10 @@ public class TableContent implements Comparable{
         }else{
             return -1;
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Name: %s, Size: %s, Files: %d, Dirs: %d\n", name, size, files, dirs);
     }
 }

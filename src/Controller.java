@@ -38,6 +38,10 @@ public class Controller {
     @FXML
     private TableColumn sizeColumn;
     @FXML
+    private TableColumn filesColumn;
+    @FXML
+    private TableColumn dirsColumn;
+    @FXML
     private ChoiceBox sizedropdown;
     @FXML
     private TextField pathTextField;
@@ -62,6 +66,8 @@ public class Controller {
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+        filesColumn.setCellValueFactory(new PropertyValueFactory<>("files"));
+        dirsColumn.setCellValueFactory(new PropertyValueFactory<>("dirs"));
         sizeColumn.setText("Size (bytes)");
 
         sizedropdown.setItems(FXCollections.observableArrayList(

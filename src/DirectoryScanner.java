@@ -12,6 +12,9 @@ public class DirectoryScanner implements Runnable{
     private boolean reloadDirs;
     private boolean ignoreHiddenElements;
 
+    private int fileCnt;
+    private int dirCnt;
+
     public DirectoryScanner(String path, Controller controller, boolean reloadDirs, boolean ignoreHiddenElements) {
         assert path != null : "[supportClasses.DirectoryScanner] Path can not be null!";
         assert controller != null : "[supportClasses.DirectoryScanner] control.Controller can not be null!";
@@ -49,6 +52,9 @@ public class DirectoryScanner implements Runnable{
                 continue;
             }
 
+            fileCnt = 0;
+            dirCnt = 0;
+
             // add entry with size 0 to list
             tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) );
 
@@ -64,6 +70,9 @@ public class DirectoryScanner implements Runnable{
             }else{
                 tContent.get(indexCnt).setSize(content[i].length());
             }
+
+            tContent.get(indexCnt).setDirs(dirCnt);
+            tContent.get(indexCnt).setFiles(fileCnt);
             indexCnt++;
 
             // check for interruption on the thread
@@ -93,11 +102,13 @@ public class DirectoryScanner implements Runnable{
                     return 0;
                 }
                 if (f.isFile()) {
+                    fileCnt++;
                     if( !isSymLink(f) ) {
                         result += f.length();
                         internResult += f.length();
                     }
                 } else if(f.isDirectory() ){
+                    dirCnt++;
                     if( !isSymLink(f) ) {
                         if (controller.containsKey(f.getPath()) && !reloadDirs){
                             result += controller.getKeySize(f.getPath());
@@ -115,8 +126,8 @@ public class DirectoryScanner implements Runnable{
             return 0;
         }
 
-        if(printCnt%1000 == 0) {
-            tContent.get(entrance).setSize(internResult);
+        tContent.get(entrance).setSize(internResult);
+        if(printCnt%500 == 0) {
             controller.updateTable(tContent);
         }
         printCnt++;
