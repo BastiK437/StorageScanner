@@ -2,53 +2,39 @@ public class TableContent implements Comparable{
 
     private String name;
     private String size;
-    private int files;
-    private int dirs;
-    private long sizeLong;
+    private String files;
+    private String dirs;
+    private PathInformation pi;
     private int convertion;
 
-    public void setFiles(int files) {
-        this.files = files;
-    }
-
-    public void setDirs(int dirs) {
-        this.dirs = dirs;
-    }
-
-    public int getFiles() {
-        return files;
-    }
-
-    public int getDirs() {
-        return dirs;
-    }
-
-    public TableContent(String name, long size, int convertion){
+    public TableContent(String name, int convertion, PathInformation pi){
         this.name = name;
-        this.sizeLong = sizeLong;
         this.convertion = convertion;
-        updateSize(size);
-
-        files = 0;
-        dirs = 0;
+        this.pi = pi;
+        updateSize(0);
     }
 
-    public long getSizeLong() {
-        return sizeLong;
-    }
-
+    // is needed for the columnfactory
     public String getSize() {
         return size;
     }
+    public String getFiles() { return files; }
+    public String getDirs() { return dirs; }
 
-    public void setSize(long sizeLong) {
-        this.sizeLong = sizeLong;
-        updateSize(sizeLong);
+    public void setPathInformation(PathInformation pi) {
+        this.pi = pi;
+        files = pi.getFiles();
+        dirs = pi.getDirs();
+        updateSize(pi.getSize());
+    }
+
+    public PathInformation getPathInformation() {
+        return pi;
     }
 
     public void setSizeConvertion(int convertion) {
         this.convertion = convertion;
-        updateSize(sizeLong);
+        updateSize(pi.getSize());
     }
 
     private void updateSize(long sizeLong){
@@ -67,7 +53,6 @@ public class TableContent implements Comparable{
                 size = String.format("%,.2f", sizeDouble/1073741824);    // 2^30
                 break;
         }
-        size += String.format(" %d, %d", files, dirs);
     }
 
     public String getName() {
@@ -81,9 +66,9 @@ public class TableContent implements Comparable{
             return 0;
         }
         TableContent tc = (TableContent) o;
-        if (tc.sizeLong > this.sizeLong) {
+        if (tc.pi.getSize() > this.pi.getSize()) {
             return 1;
-        }else if( tc.sizeLong == this.sizeLong) {
+        }else if( tc.pi.getSize() == this.pi.getSize()) {
             return 0;
         }else{
             return -1;
@@ -92,6 +77,6 @@ public class TableContent implements Comparable{
 
     @Override
     public String toString() {
-        return String.format("Name: %s, Size: %s, Files: %d, Dirs: %d\n", name, size, files, dirs);
+        return String.format("Name: %s, Size: %s, Files: %d, Dirs: %d\n", name, size, pi.getFiles(), pi.getFiles());
     }
 }

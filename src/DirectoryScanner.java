@@ -52,27 +52,34 @@ public class DirectoryScanner implements Runnable{
                 continue;
             }
 
+            PathInformation pi = new PathInformation(content[i].getPath());
             fileCnt = 0;
             dirCnt = 0;
+            long tmpSize = 0;
 
-            // add entry with size 0 to list
-            tContent.add( new TableContent(content[i].getName(), 0, controller.getselectedSize()) );
+            // add entry to list
+            tContent.add( new TableContent(content[i].getName(), controller.getselectedSize(), pi) );
 
             // check wheter the element is a file or a directory, if it is a file, directly set size, else call getDirSpace()
             if(content[i].isDirectory() ) {
                 // check if the directory was already scanned
                 if (controller.containsKey(content[i].getPath()) && !reloadDirs){
-                    tContent.get(indexCnt).setSize(controller.getKeySize(content[i].getPath() ) );
+                    pi.piUpdate(controller.getKeyInformation(content[i].getPath() ) );
                 }else {
-                    tContent.get(indexCnt).setSize(getDirSpace(content[i], indexCnt));        // set size of current folder
-                    controller.putPath(content[indexCnt].getPath(), tContent.get(indexCnt).getSizeLong());
+                    pi.piUpdate(getDirInformation(content[i], indexCnt) );        // set size of current folder
+                    pi.setAllDirs(dirCnt);
+                    pi.setAllFiles(fileCnt);
+                    controller.putScannedDirs(content[indexCnt].getPath(), pi);
                 }
             }else{
-                tContent.get(indexCnt).setSize(content[i].length());
+                pi.setSize(content[i].length());
+                pi.setFiles(null);
+                pi.setDirs(null);
+                pi.setAllDirs(dirCnt);
+                pi.setAllFiles(fileCnt);
             }
 
-            tContent.get(indexCnt).setDirs(dirCnt);
-            tContent.get(indexCnt).setFiles(fileCnt);
+            tContent.get(indexCnt).setPathInformation(pi);
             indexCnt++;
 
             // check for interruption on the thread
@@ -87,11 +94,14 @@ public class DirectoryScanner implements Runnable{
         System.out.printf("Scan finished\n");
     }
 
-    public long getDirSpace(File dir, int entrance) {
+    public PathInformation getDirInformation(File dir, int entrance) {
+        PathInformation pi = new PathInformation(dir.getPath());
         long result = 0;
+        int internFiles = 0;
+        int internDirs = 0;
 
         if(ignoreHiddenElements && dir.getName().startsWith(".")){
-            return 0;
+            return null;
         }
 
         File fileList[] = dir.listFiles();
@@ -99,39 +109,47 @@ public class DirectoryScanner implements Runnable{
             for (File f : fileList) {
                 if(Thread.currentThread().isInterrupted()) {
                     Thread.currentThread().interrupt();
-                    return 0;
+                    return null;
                 }
                 if (f.isFile()) {
                     fileCnt++;
+                    internFiles++;
                     if( !isSymLink(f) ) {
                         result += f.length();
                         internResult += f.length();
                     }
                 } else if(f.isDirectory() ){
                     dirCnt++;
+                    internDirs++;
                     if( !isSymLink(f) ) {
                         if (controller.containsKey(f.getPath()) && !reloadDirs){
-                            result += controller.getKeySize(f.getPath());
+                            result += controller.getKeyInformation(f.getPath()).getSize();
                         }else{
                             //System.out.printf("getDirSpace from dir: %s\n", dir.getPath());
-                            long space = getDirSpace(f, entrance);
-                            controller.putPath(f.getPath(), space);
-                            result += space;
+                            PathInformation information = getDirInformation(f, entrance);
+                            if(information != null) {
+                                controller.putScannedDirs(f.getPath(), information);
+                                result += information.getSize();
+                            }
                         }
                     }
                 }
             }
         }else {
             System.out.printf("Directory '%s' is empty!\n", dir.getPath());
-            return 0;
+            return null;
         }
 
-        tContent.get(entrance).setSize(internResult);
+        tContent.get(entrance).getPathInformation().setSize(internResult);
         if(printCnt%500 == 0) {
             controller.updateTable(tContent);
         }
         printCnt++;
-        return result;
+
+        pi.setDirs(internDirs);
+        pi.setFiles(internFiles);
+        pi.setSize(result);
+        return pi;
     }
 
 

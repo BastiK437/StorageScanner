@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.*;
 
 public class Controller {
-    private String VERSION = "v1.11";
+    private String VERSION = "v1.12";
     public boolean DEBUG = true;
 
     private File partitions[];
@@ -27,7 +27,7 @@ public class Controller {
     private boolean ignoreHiddenElements;
 
     // scanner specific
-    private Map<String, Long> scannedDirs;
+    private Map<String, PathInformation> scannedDirs;
 
     @FXML
     private ChoiceBox fileSdropdown;
@@ -263,16 +263,16 @@ public class Controller {
         return selectedSize;
     }
 
-    public void putPath(String path, long size ){
+    public void putScannedDirs(String path, PathInformation information ){
         if( !scannedDirs.containsKey(path) ){
-            scannedDirs.put(path, size);
+            scannedDirs.put(path, information);
         }
     }
 
     public void printMap() {
-        for(Map.Entry<String, Long> entry : scannedDirs.entrySet()) {
+        for(Map.Entry<String, PathInformation> entry : scannedDirs.entrySet()) {
             String key = entry.getKey();
-            Long value = entry.getValue();
+            PathInformation value = entry.getValue();
 
             System.out.printf("Key: %s, Value: %d\n", key, value);
         }
@@ -284,7 +284,7 @@ public class Controller {
         return scannedDirs.containsKey(key);
     }
 
-    public long getKeySize( String key ) {
+    public PathInformation getKeyInformation(String key ) {
         return scannedDirs.get(key);
     }
 }
