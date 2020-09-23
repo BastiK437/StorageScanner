@@ -68,7 +68,6 @@ public class Controller {
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
         filesColumn.setCellValueFactory(new PropertyValueFactory<>("files"));
         dirsColumn.setCellValueFactory(new PropertyValueFactory<>("dirs"));
-        sizeColumn.setText("Size (bytes)");
 
         sizedropdown.setItems(FXCollections.observableArrayList(
                 "Size (bytes)", "Size (kB)", "Size (MB)", "Size (GB)")
@@ -91,7 +90,6 @@ public class Controller {
                 startPath = "/home/basti/";
                 startPath = "/home/basti/Studium_MEGA/Semester_5/CPS";
                 getNewTable(startPath, false);
-
             }
         });
 

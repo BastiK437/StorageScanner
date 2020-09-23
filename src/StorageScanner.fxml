@@ -151,14 +151,14 @@
             </HBox>
             <TableView fx:id="table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="560.0" prefWidth="750.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
               <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="446.0" text="Content" />
-                <TableColumn fx:id="sizeColumn" minWidth="0.0" prefWidth="308.0">
+                <TableColumn fx:id="nameColumn" maxWidth="400.0" minWidth="200.0" prefWidth="300.0" text="Content" />
+                <TableColumn fx:id="sizeColumn" maxWidth="400.0" minWidth="200.0" prefWidth="300.0">
                      <graphic>
-                        <ChoiceBox fx:id="sizedropdown" prefHeight="26.0" prefWidth="392.0" />
+                        <ChoiceBox fx:id="sizedropdown" prefHeight="26.0" prefWidth="298.0" />
                      </graphic>
                   </TableColumn>
-                  <TableColumn fx:id="filesColumn" prefWidth="85.0" text="Files" />
-                  <TableColumn fx:id="dirsColumn" prefWidth="78.0" text="Dirs" />
+                  <TableColumn fx:id="filesColumn" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" resizable="false" text="Files" />
+                  <TableColumn fx:id="dirsColumn" maxWidth="160.0" minWidth="160.0" prefWidth="160.0" resizable="false" text="Dirs" />
               </columns>
             </TableView>
             <Text fx:id="versionText" strokeType="OUTSIDE" strokeWidth="0.0" text="version Text" wrappingWidth="89.7294921875" GridPane.hgrow="NEVER" GridPane.rowIndex="3" GridPane.vgrow="NEVER" />

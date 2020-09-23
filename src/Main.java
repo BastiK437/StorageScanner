@@ -36,6 +36,7 @@ public class Main extends Application{
 
         primaryStage.setTitle("Storage Scanner");
         primaryStage.setScene(new Scene(root));
+        primaryStage.setResizable(false);
         primaryStage.show();
 
         primaryStage.setOnCloseRequest( event ->
