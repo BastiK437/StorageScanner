@@ -18,7 +18,7 @@ public class Controller {
     private String partitionPaths[];
     private DirectoryScanner ds;
     private Controller controller = this;
-    private int selectedSize = 0; // 0=bytes, 1=kB, 2=MB, 3=GB
+    private int selectedSize = 2; // 0=bytes, 1=kB, 2=MB, 3=GB
     private List<TableContent> actualTable;
     private String actualPath;
     private String startPath;
@@ -59,7 +59,7 @@ public class Controller {
         versionText.setText(VERSION);
 
         // init functions
-        initCheckbox();
+        initFileSDropDown();
 
         // init objects
         scannedDirs = new HashMap<>();
@@ -72,7 +72,7 @@ public class Controller {
         sizedropdown.setItems(FXCollections.observableArrayList(
                 "Size (bytes)", "Size (kB)", "Size (MB)", "Size (GB)")
         );
-        sizedropdown.getSelectionModel().select(0);
+        sizedropdown.getSelectionModel().select(2);
 
         sizedropdown.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -86,9 +86,9 @@ public class Controller {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
                 table.getItems().clear();
 
-                //startPath = (String)fileSdropdown.getItems().get((Integer) number2);
-                startPath = "/home/basti/";
-                startPath = "/home/basti/Studium_MEGA/Semester_5/CPS";
+                startPath = (String)fileSdropdown.getItems().get((Integer) number2);
+                //startPath = "/home/basti/";
+                //startPath = "/home/basti/Studium_MEGA/Semester_5/CPS";
                 getNewTable(startPath, false);
             }
         });
@@ -138,6 +138,15 @@ public class Controller {
 
     @FXML
     private void backButtonPressed() {
+        if(startPath == null) {
+            System.out.printf("Start Path not set yet\n");
+            return;
+        }
+        if(actualPath == null) {
+            System.out.printf("Actual Path not set yet\n");
+            return;
+        }
+
         String upperPath = "";
         int maxDirs = 0;
         int tmpCnt = 0;
@@ -168,6 +177,10 @@ public class Controller {
 
     @FXML
     private void homeButtonPressed() {
+        if(startPath == null) {
+            System.out.printf("Start Path not set yet\n");
+            return;
+        }
         if(searchThread != null && searchThread.isAlive()) {
             try {
                 searchThread.interrupt();
@@ -177,6 +190,11 @@ public class Controller {
             }
         }
         getNewTable(startPath, false);
+    }
+
+    @FXML
+    private void reloadFileSystemPressed() {
+        initFileSDropDown();
     }
 
     private void getNewTable(String path, boolean reload) {
@@ -241,7 +259,7 @@ public class Controller {
         updateTable(actualTable);
     }
 
-    private void initCheckbox() {
+    private void initFileSDropDown() {
         CheckAvailableFileSystems fileSystems = new CheckAvailableFileSystems();
 
         //System.out.printf("Davor: %s\n", ZonedDateTime.now().toString() );

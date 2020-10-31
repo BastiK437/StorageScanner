@@ -57,7 +57,15 @@ public class PathInformation {
 
     public void setAllFiles(int allFiles) {
         this.allFiles = allFiles;
-        files += "(" + allFiles + ")";
+        if(files != null && files.equals("-")) {
+            files = "file";
+        } else {
+            int whitespaces = 10 - files.length()*2;
+            for(int i=0; i<whitespaces; i++) {
+                files += " ";
+            }
+            files += "-  " + allFiles;
+        }
     }
 
     public int getAllDirs() {
@@ -66,10 +74,22 @@ public class PathInformation {
 
     public void setAllDirs(int allDirs) {
         this.allDirs = allDirs;
-        dirs += "(" + allDirs + ")";
+        if(dirs != null && dirs.equals("-")) {
+            dirs = "file";
+        } else {
+            int whitespaces = 10 - dirs.length()*2;
+            for(int i=0; i<whitespaces; i++) {
+                dirs += " ";
+            }
+            dirs += "-  " + allDirs;
+        }
     }
 
     public void piUpdate( PathInformation pi ) {
+        if(pi == null) {
+            System.out.printf("Cant update path information\n");
+            return;
+        }
         path = pi.getPath();
         files = pi.getFiles();
         dirs = pi.getDirs();

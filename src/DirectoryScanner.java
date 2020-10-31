@@ -101,6 +101,7 @@ public class DirectoryScanner implements Runnable{
         int internDirs = 0;
 
         if(ignoreHiddenElements && dir.getName().startsWith(".")){
+            if(controller.DEBUG)System.out.printf("ignore hidden element\n");
             return null;
         }
 

@@ -25,7 +25,7 @@ public class Main extends Application{
 
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("StorageScanner.fxml"));
+            root = FXMLLoader.load(getClass().getResource("fx/StorageScanner.fxml"));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,6 +43,6 @@ public class Main extends Application{
         {
             exit(0);
         });
-        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("icon.png")));
+        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("fx/data/icon.png")));
     }
 }

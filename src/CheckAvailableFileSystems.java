@@ -14,7 +14,17 @@ public class CheckAvailableFileSystems {
             return null;
         }
 
+        // add external partitions
         for(String s: mountpoints) {
+            deviceList.add(new File(s));
+        }
+
+        // add home directory
+        deviceList.add(new File("/home/"));
+
+        // add all user dirs
+        String[] userDirs = getUserDirs();
+        for(String s: userDirs) {
             deviceList.add(new File(s));
         }
 
@@ -48,7 +58,20 @@ public class CheckAvailableFileSystems {
             e.printStackTrace();
         }
 
-        return (String[]) mountPoints.toArray(new String[0]);
+        return mountPoints.toArray(new String[0]);
+    }
+
+    private String[] getUserDirs() {
+        List<String> userDirList = new ArrayList<>();
+        File homeDir = new File("/home/");
+
+        File[] userDirs = homeDir.listFiles();
+        for(int i=0; i<userDirs.length; i++) {
+            if(userDirs[i].isDirectory()) {
+                userDirList.add(userDirs[i].getAbsolutePath());
+            }
+        }
+        return userDirList.toArray(new String[0]);
     }
 
     private String getColumn(String line, int column) {
