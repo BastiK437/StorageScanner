@@ -83,6 +83,10 @@ public class TableController {
         getNewTable(pathController.getPath());
     }
 
+    public void setTableContent(List<TableContent> tableContent) {
+        updateTable(tableContent);
+    }
+
     public void sortTable() {
         // TODO try table.sort();
         Collections.sort(currentTable);

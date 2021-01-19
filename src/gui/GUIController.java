@@ -95,46 +95,7 @@ public class GUIController {
     }
 
 
-
-
-
-
-
-
-    public void putScannedDirs(String path, PathInformation information ){
-        if( !scannedDirs.containsKey(path) ){
-            scannedDirs.put(path, information);
-        }
-    }
-
-    public void printMap() {
-        for(Map.Entry<String, PathInformation> entry : scannedDirs.entrySet()) {
-            String key = entry.getKey();
-            PathInformation value = entry.getValue();
-
-            System.out.printf("Key: %s, Value: %d\n", key, value);
-        }
-
-        System.out.printf("Map size: %d\n", scannedDirs.size());
-    }
-
-
-    public boolean containsKey( String key ){
-        return scannedDirs.containsKey(key);
-    }
-
-
-
-
-
-
-
-
     // getter
-    public PathInformation getKeyInformation(String key ) {
-        return scannedDirs.get(key);
-    }
-
     public TableController getTableController() {
         return tableController;
     }

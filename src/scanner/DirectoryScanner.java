@@ -1,6 +1,7 @@
 package scanner;
 
 import gui.GUIController;
+import gui.TableController;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,9 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DirectoryScanner implements Runnable{
+    // extern
+    private TableController tableController;
+
+
+    // intern
     private String path;
     private List<TableContent> tContent;
-    private GUIController controller;
     private long internResult;
     private int printCnt;
     private boolean reloadDirs;
@@ -19,15 +24,15 @@ public class DirectoryScanner implements Runnable{
     private int fileCnt;
     private int dirCnt;
 
-    public DirectoryScanner(String path, GUIController controller, boolean reloadDirs, boolean ignoreHiddenElements) {
-        assert path != null : "[supportClasses.scanner.DirectoryScanner] Path can not be null!";
-        assert controller != null : "[supportClasses.scanner.DirectoryScanner] control.Controller can not be null!";
+    public DirectoryScanner(TableController tableController, String path, boolean ignoreHiddenElements) {
+        this.tableController = tableController;
 
         this.path = path;
-        this.controller = controller;
-        printCnt = 0;
-        this.reloadDirs = reloadDirs;
         this.ignoreHiddenElements = ignoreHiddenElements;
+
+        printCnt = 0;
+        // TODO
+        // this.reloadDirs = reloadDirs;
     }
 
     @Override
@@ -92,8 +97,8 @@ public class DirectoryScanner implements Runnable{
                 break;
             }
         }
-        controller.updateTable(tContent);
-        controller.sortTable();
+        tableController.setTableContent(tContent);
+        tableController.sortTable();
 
         System.out.printf("Scan finished\n");
     }
