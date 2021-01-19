@@ -60,11 +60,7 @@ public class PathInformation {
         if(files != null && files.equals("-")) {
             files = "file";
         } else {
-            int whitespaces = 10 - files.length()*2;
-            for(int i=0; i<whitespaces; i++) {
-                files += " ";
-            }
-            files += "-  " + allFiles;
+            files = String.format("%d", allFiles);
         }
     }
 
@@ -77,11 +73,7 @@ public class PathInformation {
         if(dirs != null && dirs.equals("-")) {
             dirs = "file";
         } else {
-            int whitespaces = 10 - dirs.length()*2;
-            for(int i=0; i<whitespaces; i++) {
-                dirs += " ";
-            }
-            dirs += "-  " + allDirs;
+            dirs = String.format("%d", allDirs);
         }
     }
 
