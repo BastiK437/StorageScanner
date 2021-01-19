@@ -1,3 +1,5 @@
+package scanner;
+
 public class TableContent implements Comparable{
 
     private String name;

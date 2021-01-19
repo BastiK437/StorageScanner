@@ -1,3 +1,7 @@
+package test;
+
+import scanner.CheckAvailableFileSystems;
+
 import java.io.File;
 
 public class Test {

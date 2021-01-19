@@ -1,3 +1,5 @@
+package scanner;
+
 public class PathInformation {
 
     private String path;

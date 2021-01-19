@@ -1,3 +1,4 @@
+import gui.GUIController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,7 +10,7 @@ import java.io.IOException;
 
 import static java.lang.System.exit;
 
-public class Main extends Application{
+public class StorageScanner extends Application{
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -25,12 +26,12 @@ public class Main extends Application{
 
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("fx/StorageScanner.fxml"));
+            root = FXMLLoader.load(getClass().getResource("data/fx/StorageScanner.fxml"));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Controller controller = new Controller();
+        GUIController controller = new GUIController();
         FXMLLoader loader = new FXMLLoader();
         loader.setController(controller);
 
@@ -43,6 +44,6 @@ public class Main extends Application{
         {
             exit(0);
         });
-        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("fx/data/icon.png")));
+        primaryStage.getIcons().add(new Image(StorageScanner.class.getResourceAsStream("data/icons/icon.png")));
     }
 }
