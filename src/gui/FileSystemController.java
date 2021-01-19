@@ -19,30 +19,35 @@ public class FileSystemController {
     // private vars
     private List<TableContent> actualTable;
     private String actualPath;
-    private String startPath;
+    private String diskPath;
     private File partitions[];
 
-    public FileSystemController(ChoiceBox fileSdropdown) {
+    // other gui classes
+    private PathController pathController;
+
+    public FileSystemController(ChoiceBox fileSdropdown, GUIController guiController) {
         this.fileSdropdown = fileSdropdown;
+        this.pathController = guiController.getPathController();
 
         initFileSDropDown();
 
+        // add dropdown listener
         fileSdropdown.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                // TODO table.getItems().clear();
-
-                startPath = (String)fileSdropdown.getItems().get((Integer) number2);
-                // TODO getNewTable(startPath, false);
+                diskPath = (String)fileSdropdown.getItems().get((Integer) number2);
+                pathController.setDisk(diskPath);
             }
         });
     }
 
+
+
+    // private functions
     private void initFileSDropDown() {
         CheckAvailableFileSystems fileSystems = new CheckAvailableFileSystems();
 
         File partitions[] = fileSystems.checkFileSystems();
-
         String partitionPaths[] = new String[partitions.length];
 
         for( int i=0; i<partitions.length; i++) {
@@ -50,6 +55,5 @@ public class FileSystemController {
         }
 
         fileSdropdown.setItems(FXCollections.observableArrayList(partitionPaths));
-        // System.out.printf("Items set\n");
     }
 }

@@ -23,16 +23,15 @@ public class GUIController {
 
     private String partitionPaths[];
     private DirectoryScanner ds;
-    private GUIController controller = this;
 
-    private Thread searchThread;
-    private boolean tableReady = true;
+
 
     // gui controller
     private TableController tableController;
     private SizeController sizeController;
     private FileSystemController fileSystemController;
     private Settings settings;
+    private PathController pathController;
 
     // scanner specific
     private Map<String, PathInformation> scannedDirs;
@@ -68,83 +67,36 @@ public class GUIController {
         // init objects
         scannedDirs = new HashMap<>();
 
-        tableController = new TableController(table, nameColumn, sizeColumn, filesColumn, dirsColumn);
+        tableController = new TableController(this, table, nameColumn, sizeColumn, filesColumn, dirsColumn);
         sizeController = new SizeController(sizedropdown, this);
-        fileSystemController = new FileSystemController(fileSdropdown);
+        fileSystemController = new FileSystemController(fileSdropdown, this);
         settings = new Settings(hiddenElementsCheckbox);
+        pathController = new PathController(this, pathTextField);
     }
 
     @FXML
     private void reloadButtonPressed() {
-        getNewTable(actualPath, true);
+        tableController.reloadTable();
     }
 
     @FXML
     private void backButtonPressed() {
-        if(startPath == null) {
-            System.out.printf("Start Path not set yet\n");
-            return;
-        }
-        if(actualPath == null) {
-            System.out.printf("Actual Path not set yet\n");
-            return;
-        }
-
-        String upperPath = "";
-        int maxDirs = 0;
-        int tmpCnt = 0;
-
-        for(int i=0; i<actualPath.length(); i++) {
-            if(actualPath.charAt(i) == '/') {
-                maxDirs++;
-            }
-        }
-
-        if(maxDirs == 1) {
-            upperPath = "/";
-        }else {
-            for (int i = 0; i < actualPath.length(); i++) {
-                if (actualPath.charAt(i) == '/') {
-                    tmpCnt++;
-                }
-                if (tmpCnt < maxDirs) {
-                    upperPath += actualPath.charAt(i);
-                } else {
-                    break;
-                }
-            }
-        }
-        getNewTable(upperPath, false);
-
+        pathController.leaveDirectory();
     }
 
     @FXML
     private void homeButtonPressed() {
-        if(startPath == null) {
-            System.out.printf("Start Path not set yet\n");
-            return;
-        }
-        if(searchThread != null && searchThread.isAlive()) {
-            try {
-                searchThread.interrupt();
-                searchThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        getNewTable(startPath, false);
+        pathController.goToHomeDirectory();
     }
 
     @FXML
     private void reloadFileSystemPressed() {
-        initFileSDropDown();
+        // TODO initFileSDropDown();
     }
 
 
 
-    private void updatePathTextField(String path) {
-        pathTextField.setText(path);
-    }
+
 
 
 
@@ -171,6 +123,13 @@ public class GUIController {
         return scannedDirs.containsKey(key);
     }
 
+
+
+
+
+
+
+
     // getter
     public PathInformation getKeyInformation(String key ) {
         return scannedDirs.get(key);
@@ -190,5 +149,9 @@ public class GUIController {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public PathController getPathController() {
+        return  pathController;
     }
 }
