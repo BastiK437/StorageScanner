@@ -1,7 +1,9 @@
 package scanner;
 
-import gui.GUIController;
 import gui.TableController;
+import helper.TableContent;
+import helper.tree.Leaf;
+import helper.tree.Tree;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,29 +12,20 @@ import java.util.List;
 
 public class DirectoryScanner implements Runnable{
     // extern
-    private TableController tableController;
+    private DirectoryManager directoryManager;
 
 
     // intern
     private String path;
     private List<TableContent> tContent;
-    private long internResult;
-    private int printCnt;
-    private boolean reloadDirs;
     private boolean ignoreHiddenElements;
+    private Tree<TableContent> fileTree;
 
-    private int fileCnt;
-    private int dirCnt;
-
-    public DirectoryScanner(TableController tableController, String path, boolean ignoreHiddenElements) {
-        this.tableController = tableController;
+    public DirectoryScanner(DirectoryManager directoryManager, String path, boolean ignoreHiddenElements) {
+        this.directoryManager = directoryManager;
 
         this.path = path;
         this.ignoreHiddenElements = ignoreHiddenElements;
-
-        printCnt = 0;
-        // TODO
-        // this.reloadDirs = reloadDirs;
     }
 
     @Override
@@ -40,126 +33,74 @@ public class DirectoryScanner implements Runnable{
         File file = new File(path);
 
         if(file.isFile() || !file.exists()) {
-            System.out.printf("file or not existing\n");
+            System.out.printf("file or dir not existing\n");
             return;
         }
 
-        File content[] = file.listFiles();
-        tContent = new ArrayList<>();
-
-        int indexCnt = 0;
-        for(int i=0; i<content.length; i++){
-            internResult = 0;
-
-            // check if element is a hidden element, aka starts with a dot '.'
-            if(ignoreHiddenElements && content[i].getName().startsWith(".")){
-                continue;
-            }
-
-            // check if it is the proc/ dir
-            if(content[i].getName().equals("proc")){
-                continue;
-            }
-
-            PathInformation pi = new PathInformation(content[i].getPath());
-            fileCnt = 0;
-            dirCnt = 0;
-            long tmpSize = 0;
-
-            // add entry to list
-            tContent.add( new TableContent(content[i].getName(), controller.getselectedSize(), pi) );
-
-            // check wheter the element is a file or a directory, if it is a file, directly set size, else call getDirSpace()
-            if(content[i].isDirectory() ) {
-                // check if the directory was already scanned
-                if (controller.containsKey(content[i].getPath()) && !reloadDirs){
-                    pi.piUpdate(controller.getKeyInformation(content[i].getPath() ) );
-                }else {
-                    pi.piUpdate(getDirInformation(content[i], indexCnt) );        // set size of current folder
-                    pi.setAllDirs(dirCnt);
-                    pi.setAllFiles(fileCnt);
-                    controller.putScannedDirs(content[indexCnt].getPath(), pi);
-                }
-            }else{
-                pi.setSize(content[i].length());
-                pi.setFiles(null);
-                pi.setDirs(null);
-                pi.setAllDirs(dirCnt);
-                pi.setAllFiles(fileCnt);
-            }
-
-            tContent.get(indexCnt).setPathInformation(pi);
-            indexCnt++;
-
-            // check for interruption on the thread
-            if(Thread.currentThread().isInterrupted()) {
-                Thread.currentThread().interrupt();
-                break;
-            }
+        if(file.isDirectory()) {
+            fileTree = new Tree<>(new TableContent(file.getName()));
+            createTree(file, fileTree.getRoot());
         }
-        tableController.setTableContent(tContent);
-        tableController.sortTable();
+
+        directoryManager.calculatingFinished(fileTree);
 
         System.out.printf("Scan finished\n");
     }
 
-    public PathInformation getDirInformation(File dir, int entrance) {
-        PathInformation pi = new PathInformation(dir.getPath());
+    public long createTree(File dir, Leaf<TableContent> root) {
         long result = 0;
-        int internFiles = 0;
-        int internDirs = 0;
 
         if(ignoreHiddenElements && dir.getName().startsWith(".")){
-            if(controller.DEBUG)System.out.printf("ignore hidden element\n");
-            return null;
+            return 0;
         }
 
         File fileList[] = dir.listFiles();
         if(fileList != null) {
             for (File f : fileList) {
+                // check for interruption on the thread
                 if(Thread.currentThread().isInterrupted()) {
                     Thread.currentThread().interrupt();
-                    return null;
+                    break;
+                }
+                if(ignoreHiddenElements && f.getName().startsWith(".")){
+                    continue;
+                }
+                // check if it is the proc/ dir
+                if(f.getName().equals("proc")){
+                    continue;
+                }
+
+                TableContent newContent = new TableContent(f.getName());
+                newContent.setPath(f.getPath());
+
+                // set new leaf in tree
+                Leaf<TableContent> newLeaf = new Leaf<>();
+                newLeaf.setData(newContent);
+                root.addChildren(newLeaf);
+
+                if(Thread.currentThread().isInterrupted()) {
+                    Thread.currentThread().interrupt();
+                    return 0;
                 }
                 if (f.isFile()) {
-                    fileCnt++;
-                    internFiles++;
+                    root.getData().addFile();
                     if( !isSymLink(f) ) {
                         result += f.length();
-                        internResult += f.length();
                     }
                 } else if(f.isDirectory() ){
-                    dirCnt++;
-                    internDirs++;
+                    root.getData().addDir();
                     if( !isSymLink(f) ) {
-                        if (controller.containsKey(f.getPath()) && !reloadDirs){
-                            result += controller.getKeyInformation(f.getPath()).getSize();
-                        }else{
-                            //System.out.printf("getDirSpace from dir: %s\n", dir.getPath());
-                            PathInformation information = getDirInformation(f, entrance);
-                            if(information != null) {
-                                controller.putScannedDirs(f.getPath(), information);
-                                result += information.getSize();
-                            }
-                        }
+                        result += createTree(f, newLeaf);
                     }
                 }
+                root.getData().setSizeLong(result);
             }
         }else {
             System.out.printf("Directory '%s' is empty!\n", dir.getPath());
-            return null;
+            return 0;
         }
 
-        tContent.get(entrance).getPathInformation().setSize(internResult);
-        if(printCnt%500 == 0) {
-            controller.updateTable(tContent);
-        }
-        printCnt++;
-
-        pi.setDirs(internDirs);
-        pi.setFiles(internFiles);
-        pi.setSize(result);
-        return pi;
+        return result;
     }
 
 

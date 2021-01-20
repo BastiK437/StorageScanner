@@ -6,11 +6,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import scanner.DirectoryScanner;
-import scanner.TableContent;
+import scanner.DirectoryManager;
+import helper.TableContent;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +35,7 @@ public class TableController {
     // private classes
     private TableUpdate tableUpdateThread;
     private List<TableContent> currentTable;
-    private Thread searchThread;
+    private DirectoryManager directoryManager;
 
 
     public TableController(GUIController guiController, TableView table, TableColumn nameColumn, TableColumn sizeColumn, TableColumn filesColumn, TableColumn dirsColumn) {
@@ -47,8 +45,10 @@ public class TableController {
         this.filesColumn = filesColumn;
         this.dirsColumn = dirsColumn;
 
-        this.pathController = guiController.getPathController();
-        this.settings = guiController.getSettings();
+        this.pathController = guiController.pathController;
+        this.settings = guiController.settings;
+
+        directoryManager = new DirectoryManager(this);
 
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -76,42 +76,35 @@ public class TableController {
     }
 
     public void setPath(String path) {
-        getNewTable(path);
+        getTable(path);
     }
 
     public void reloadTable() {
         getNewTable(pathController.getPath());
     }
 
-    public void setTableContent(List<TableContent> tableContent) {
-        updateTable(tableContent);
-    }
+    
 
     public void sortTable() {
         // TODO try table.sort();
         Collections.sort(currentTable);
         updateTable(currentTable);
     }
-
-
-
+    
+    // get called by directory manager
+    public void setTableContent(List<TableContent> tableContent) {
+        updateTable(tableContent);
+    }
 
     // private functions
+    private void getTable(String path) {
+        directoryManager.getTableToPath(path, settings.getIgnoreHiddenElements());
+    }
+
+    
     private void getNewTable(String path) {
-        if(searchThread != null && searchThread.isAlive()) {
-            try {
-                searchThread.interrupt();
-                searchThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
         // get settings
-        DirectoryScanner ds = new DirectoryScanner(path, settings.getIgnoreHiddenElements());
-
-        searchThread = new Thread(ds);
-        searchThread.start();
+        directoryManager.createTreeToPath(path, settings.getIgnoreHiddenElements());
     }
 
     private void updateTable(List<TableContent> tc) {

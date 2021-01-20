@@ -1,17 +1,13 @@
 package gui;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import scanner.CheckAvailableFileSystems;
 import scanner.DirectoryScanner;
-import scanner.PathInformation;
-import scanner.TableContent;
 
 import java.io.File;
 import java.util.*;
@@ -27,14 +23,11 @@ public class GUIController {
 
 
     // gui controller
-    private TableController tableController;
-    private SizeController sizeController;
-    private FileSystemController fileSystemController;
-    private Settings settings;
-    private PathController pathController;
-
-    // scanner specific
-    private Map<String, PathInformation> scannedDirs;
+    public TableController tableController;
+    public SizeController sizeController;
+    public FileSystemController fileSystemController;
+    public Settings settings;
+    public PathController pathController;
 
     @FXML
     private ChoiceBox fileSdropdown;
@@ -57,6 +50,8 @@ public class GUIController {
     @FXML
     private CheckBox hiddenElementsCheckbox;
 
+    private String diskPath;
+
 
 
     @FXML
@@ -64,14 +59,16 @@ public class GUIController {
         // init fxml objects
         versionText.setText(VERSION);
 
-        // init objects
-        scannedDirs = new HashMap<>();
 
+        settings = new Settings(hiddenElementsCheckbox);
         tableController = new TableController(this, table, nameColumn, sizeColumn, filesColumn, dirsColumn);
         sizeController = new SizeController(sizedropdown, this);
-        fileSystemController = new FileSystemController(fileSdropdown, this);
-        settings = new Settings(hiddenElementsCheckbox);
         pathController = new PathController(this, pathTextField);
+        fileSystemController = new FileSystemController(fileSdropdown, this);
+
+
+
+
     }
 
     @FXML
@@ -92,6 +89,12 @@ public class GUIController {
     @FXML
     private void reloadFileSystemPressed() {
         // TODO initFileSDropDown();
+
+    }
+
+    @FXML
+    private void dropdownClicked() {
+
     }
 
 

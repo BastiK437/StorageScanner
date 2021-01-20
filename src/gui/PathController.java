@@ -23,7 +23,7 @@ public class PathController {
     public PathController(GUIController guiController, TextField pathTextField) {
         this.pathTextField = pathTextField;
 
-        guiController.getTableController();
+        tableController = guiController.tableController;
     }
 
 

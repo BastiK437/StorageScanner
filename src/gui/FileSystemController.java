@@ -6,7 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import scanner.CheckAvailableFileSystems;
-import scanner.TableContent;
+import helper.TableContent;
 
 import java.io.File;
 import java.util.List;
@@ -27,7 +27,9 @@ public class FileSystemController {
 
     public FileSystemController(ChoiceBox fileSdropdown, GUIController guiController) {
         this.fileSdropdown = fileSdropdown;
-        this.pathController = guiController.getPathController();
+
+
+        this.pathController = guiController.pathController;
 
         initFileSDropDown();
 
