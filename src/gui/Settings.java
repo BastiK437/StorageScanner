@@ -15,7 +15,7 @@ public class Settings {
 
 
     // constructor
-    public Settings(CheckBox hiddenElementsCheckbox) {
+    public void init(GUIController guiController, CheckBox hiddenElementsCheckbox) {
         this.hiddenElementsCheckbox = hiddenElementsCheckbox;
 
         ignoreHiddenElements = false;

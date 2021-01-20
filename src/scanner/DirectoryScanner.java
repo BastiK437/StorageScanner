@@ -19,7 +19,7 @@ public class DirectoryScanner implements Runnable{
     private String path;
     private List<TableContent> tContent;
     private boolean ignoreHiddenElements;
-    private Tree<TableContent> fileTree;
+    private Tree fileTree;
 
     public DirectoryScanner(DirectoryManager directoryManager, String path, boolean ignoreHiddenElements) {
         this.directoryManager = directoryManager;
@@ -38,7 +38,9 @@ public class DirectoryScanner implements Runnable{
         }
 
         if(file.isDirectory()) {
-            fileTree = new Tree<>(new TableContent(file.getName()));
+            TableContent root = new TableContent(file.getName());
+            root.setPath(file.getPath());
+            fileTree = new Tree(root);
             createTree(file, fileTree.getRoot());
         }
 
@@ -47,7 +49,7 @@ public class DirectoryScanner implements Runnable{
         System.out.printf("Scan finished\n");
     }
 
-    public long createTree(File dir, Leaf<TableContent> root) {
+    public long createTree(File dir, Leaf root) {
         long result = 0;
 
         if(ignoreHiddenElements && dir.getName().startsWith(".")){
@@ -74,8 +76,9 @@ public class DirectoryScanner implements Runnable{
                 newContent.setPath(f.getPath());
 
                 // set new leaf in tree
-                Leaf<TableContent> newLeaf = new Leaf<>();
+                Leaf newLeaf = new Leaf();
                 newLeaf.setData(newContent);
+                newLeaf.setParent(root);
                 root.addChildren(newLeaf);
 
                 if(Thread.currentThread().isInterrupted()) {

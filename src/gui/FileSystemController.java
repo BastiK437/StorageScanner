@@ -25,11 +25,11 @@ public class FileSystemController {
     // other gui classes
     private PathController pathController;
 
-    public FileSystemController(ChoiceBox fileSdropdown, GUIController guiController) {
+    public void init(GUIController guiController, ChoiceBox fileSdropdown) {
         this.fileSdropdown = fileSdropdown;
 
 
-        this.pathController = guiController.pathController;
+        this.pathController = guiController.getPathController();
 
         initFileSDropDown();
 

@@ -1,17 +1,19 @@
 package helper.tree;
 
+import helper.TableContent;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tree<T> {
-    private Leaf<T> root;
+public class Tree {
+    private Leaf root;
 
-    public Tree(T rootData) {
-        root = new Leaf<T>();
+    public Tree(TableContent rootData) {
+        root = new Leaf();
         root.setData(rootData);
     }
 
-    public Leaf<T> getRoot() {
+    public Leaf getRoot() {
         return root;
     }
 }

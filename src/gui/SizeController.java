@@ -22,7 +22,7 @@ public class SizeController {
 
 
     // constructor
-    public SizeController(ChoiceBox sizedropdown, GUIController guiController) {
+    public void init(GUIController guiController, ChoiceBox sizedropdown) {
         this.sizedropdown = sizedropdown;
         this.tableController = guiController.getTableController();
 

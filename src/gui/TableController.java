@@ -37,16 +37,15 @@ public class TableController {
     private List<TableContent> currentTable;
     private DirectoryManager directoryManager;
 
-
-    public TableController(GUIController guiController, TableView table, TableColumn nameColumn, TableColumn sizeColumn, TableColumn filesColumn, TableColumn dirsColumn) {
+    public void init(GUIController guiController, TableView table, TableColumn nameColumn, TableColumn sizeColumn, TableColumn filesColumn, TableColumn dirsColumn) {
         this.table = table;
         this.nameColumn = nameColumn;
         this.sizeColumn = sizeColumn;
         this.filesColumn = filesColumn;
         this.dirsColumn = dirsColumn;
 
-        this.pathController = guiController.pathController;
-        this.settings = guiController.settings;
+        this.pathController = guiController.getPathController();
+        this.settings = guiController.getSettings();
 
         directoryManager = new DirectoryManager(this);
 

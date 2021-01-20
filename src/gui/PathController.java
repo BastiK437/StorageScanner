@@ -20,10 +20,10 @@ public class PathController {
 
 
     // constructor
-    public PathController(GUIController guiController, TextField pathTextField) {
+    public void init(GUIController guiController, TextField pathTextField) {
         this.pathTextField = pathTextField;
 
-        tableController = guiController.tableController;
+        tableController = guiController.getTableController();
     }
 
 

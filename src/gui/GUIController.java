@@ -59,16 +59,17 @@ public class GUIController {
         // init fxml objects
         versionText.setText(VERSION);
 
+        settings = new Settings();
+        tableController = new TableController();
+        sizeController = new SizeController();
+        pathController = new PathController();
+        fileSystemController = new FileSystemController();
 
-        settings = new Settings(hiddenElementsCheckbox);
-        tableController = new TableController(this, table, nameColumn, sizeColumn, filesColumn, dirsColumn);
-        sizeController = new SizeController(sizedropdown, this);
-        pathController = new PathController(this, pathTextField);
-        fileSystemController = new FileSystemController(fileSdropdown, this);
-
-
-
-
+        settings.init(this, hiddenElementsCheckbox);
+        tableController.init(this, table, nameColumn, sizeColumn, filesColumn, dirsColumn);
+        sizeController .init(this, sizedropdown);
+        pathController.init(this, pathTextField);
+        fileSystemController.init(this, fileSdropdown);
     }
 
     @FXML
