@@ -1,13 +1,11 @@
 package scanner;
 
-import gui.TableController;
 import helper.TableContent;
 import helper.tree.Leaf;
 import helper.tree.Tree;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DirectoryScanner implements Runnable{
@@ -38,7 +36,11 @@ public class DirectoryScanner implements Runnable{
         }
 
         if(file.isDirectory()) {
-            TableContent root = new TableContent(file.getName());
+            String fileName = file.getName();
+            if(fileName.equals("")) {
+                fileName = "root";
+            }
+            TableContent root = new TableContent(fileName);
             root.setPath(file.getPath());
             fileTree = new Tree(root);
             createTree(file, fileTree.getRoot());
@@ -57,6 +59,7 @@ public class DirectoryScanner implements Runnable{
         }
 
         File fileList[] = dir.listFiles();
+        int progress = 0;
         if(fileList != null) {
             for (File f : fileList) {
                 // check for interruption on the thread
@@ -89,6 +92,8 @@ public class DirectoryScanner implements Runnable{
                     root.getData().addFile();
                     if( !isSymLink(f) ) {
                         result += f.length();
+                        newLeaf.getData().setSizeRaw(f.length());
+                        newLeaf.getData().isFile();
                     }
                 } else if(f.isDirectory() ){
                     root.getData().addDir();
@@ -96,10 +101,12 @@ public class DirectoryScanner implements Runnable{
                         result += createTree(f, newLeaf);
                     }
                 }
-                root.getData().setSizeLong(result);
+                root.getData().setSizeRaw(result);
+                progress++;
+                directoryManager.setProgress(((double)fileList.length/(double)progress) / 100.0);
             }
         }else {
-            System.out.printf("Directory '%s' is empty!\n", dir.getPath());
+            //System.out.printf("Directory '%s' is empty!\n", dir.getPath());
             return 0;
         }
 

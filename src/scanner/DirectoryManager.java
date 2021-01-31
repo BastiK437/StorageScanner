@@ -1,5 +1,6 @@
 package scanner;
 
+import gui.Settings;
 import gui.TableController;
 import helper.TableContent;
 import helper.tree.Leaf;
@@ -12,13 +13,15 @@ public class DirectoryManager {
 
     private Tree fileTree;
     private TableController tableController;
+    private Settings settings;
     private DirectoryScanner directoryScanner;
     private boolean oldIgnoreHiddenElements;
 
     private Thread scannerThread;
 
-    public DirectoryManager(TableController tableController) {
+    public DirectoryManager(TableController tableController, Settings settings) {
         this.tableController = tableController;
+        this.settings = settings;
     }
 
 
@@ -31,11 +34,24 @@ public class DirectoryManager {
             createTreeToPath(path, ignoreHiddenElements);
         } else {
             String pathDirs[] = path.split("/");
+            if( pathDirs.length != 0 && pathDirs[0].equals("")) {
+                pathDirs[0] = "root";
+            }
             int rootIndex = -1;
-            // check if the tree is build with an available root
-            for(int i=0; i<pathDirs.length; i++) {
-                if(pathDirs[i].equals(fileTree.getRoot().getData().getName())) {
-                    rootIndex = i;
+
+            if(path.equals("/")) {
+                if(fileTree.getRoot().getData().getName() == "root") {
+                    rootIndex = 0;
+                } else {
+                    rootIndex = -1;
+                }
+            } else {
+                // check if the tree is build with an available root
+                for (int i = 0; i < pathDirs.length; i++) {
+                    if (pathDirs[i].equals(fileTree.getRoot().getData().getName())) {
+                        rootIndex = i;
+                        break;
+                    }
                 }
             }
 
@@ -71,12 +87,17 @@ public class DirectoryManager {
         scannerThread.start();
     }
 
-    public void setFileTree(Tree fileTree) {
+    public void setTmpTree(Tree fileTree) {
         this.fileTree = fileTree;
+        getTableToPath(fileTree.getRoot().getData().getPath(), oldIgnoreHiddenElements);
     }
 
     public void calculatingFinished(Tree fileTree) {
-        setFileTree(fileTree);
+        this.fileTree = fileTree;
         getTableToPath(fileTree.getRoot().getData().getPath(), oldIgnoreHiddenElements);
+    }
+
+    public void setProgress(double procent) {
+        settings.setProgress(procent);
     }
 }

@@ -31,6 +31,7 @@ public class TableController {
     // other gui classes
     private PathController pathController;
     private Settings settings;
+    private SizeController sizeController;
 
     // private classes
     private TableUpdate tableUpdateThread;
@@ -46,8 +47,9 @@ public class TableController {
 
         this.pathController = guiController.getPathController();
         this.settings = guiController.getSettings();
+        this.sizeController = guiController.getSizeController();
 
-        directoryManager = new DirectoryManager(this);
+        directoryManager = new DirectoryManager(this, settings);
 
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -70,24 +72,16 @@ public class TableController {
 
 
     // public functions
-    public void clearTable() {
-        updateTable(new ArrayList<>());
-    }
-
     public void setPath(String path) {
         getTable(path);
     }
 
-    public void reloadTable() {
-        getNewTable(pathController.getPath());
-    }
-
-    
-
-    public void sortTable() {
-        // TODO try table.sort();
-        Collections.sort(currentTable);
-        updateTable(currentTable);
+    public void reloadTable(boolean completeReload) {
+        if(completeReload) {
+            getNewTable(pathController.getPath());
+        } else {
+            getTable(pathController.getPath());
+        }
     }
     
     // get called by directory manager
@@ -95,13 +89,21 @@ public class TableController {
         updateTable(tableContent);
     }
 
+
+
     // private functions
     private void getTable(String path) {
+        if(path == null) {
+            return;
+        }
         directoryManager.getTableToPath(path, settings.getIgnoreHiddenElements());
     }
 
     
     private void getNewTable(String path) {
+        if(path == null) {
+            return;
+        }
         // get settings
         directoryManager.createTreeToPath(path, settings.getIgnoreHiddenElements());
     }
@@ -111,6 +113,7 @@ public class TableController {
 
         if(tableUpdateThread != null) {
             tableUpdateThread.interrupt();
+            tableUpdateThread.join();
         }
 
         tableUpdateThread = new TableUpdate();
@@ -126,11 +129,19 @@ public class TableController {
     // private classes
     class TableUpdate implements Runnable {
         private boolean interrupt;
+        private boolean running;
+
         @Override
         public void run() {
+            running = true;
             interrupt = false;
+
+            Collections.sort(currentTable);
+            sizeController.manipulateSizeOfContent(currentTable);
+
             List<TableContent> tmpList = new ArrayList<>(currentTable);
             table.getItems().clear();
+
             for (TableContent content: tmpList) {
                 if(interrupt) {
                     break;
@@ -141,11 +152,22 @@ public class TableController {
                     table.getItems().add(content);
                 }
             }
-            //table.scrollTo(actualTable.size()-1);
+
+            running = false;
         }
 
         public void interrupt() {
             interrupt = true;
+        }
+
+        public void join() {
+            while(running) {
+                try {
+                    Thread.currentThread().wait(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

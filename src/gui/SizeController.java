@@ -1,11 +1,14 @@
 package gui;
 
+import helper.TableContent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import scanner.CheckAvailableFileSystems;
+
+import java.util.List;
 
 public class SizeController {
 
@@ -33,7 +36,8 @@ public class SizeController {
         sizedropdown.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                updateSizeConvertion((int) number2 );
+                updateSizeConvertion();
+                selectedSize = (int) number2;
             }
         });
 
@@ -41,28 +45,28 @@ public class SizeController {
     }
 
 
+    public void manipulateSizeOfContent(List<TableContent> table) {
+        int manipulator = 0;
 
-    // private functions
-    private void updateSizeConvertion(int size) {
-        selectedSize = size;
-        // TODO
-        /*
-        if(actualTable != null) {
-            for(int i=0; i<actualTable.size(); i++) {
-                actualTable.get(i).setSizeConvertion(size);
+        for(TableContent tc: table) {
+            switch (selectedSize) {
+                case 0:
+                    tc.setSize(String.format("%,.2f", (double)tc.getSizeRaw()) );
+                    break;
+                case 1:
+                    tc.setSize(String.format("%,.2f", (double)tc.getSizeRaw() / 1024.0) );
+                    break;
+                case 2:
+                    tc.setSize(String.format("%,.2f", (double)tc.getSizeRaw() / 1048576.0) );
+                    break;
+                case 3:
+                    tc.setSize(String.format("%,.2f", (double)tc.getSizeRaw() / 1073741824.0) );
+                    break;
             }
-            updateTable(actualTable);
         }
-         */
     }
 
-
-    // getter
-    // TODO
-    /*
-    public int getselectedSize() {
-        return selectedSize;
+    private void updateSizeConvertion() {
+        tableController.reloadTable(false);
     }
-
-     */
 }

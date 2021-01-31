@@ -49,6 +49,8 @@ public class GUIController {
     private Text versionText;
     @FXML
     private CheckBox hiddenElementsCheckbox;
+    @FXML
+    private ProgressBar progressBar;
 
     private String diskPath;
 
@@ -65,7 +67,7 @@ public class GUIController {
         pathController = new PathController();
         fileSystemController = new FileSystemController();
 
-        settings.init(this, hiddenElementsCheckbox);
+        settings.init(this, hiddenElementsCheckbox, progressBar);
         tableController.init(this, table, nameColumn, sizeColumn, filesColumn, dirsColumn);
         sizeController .init(this, sizedropdown);
         pathController.init(this, pathTextField);
@@ -74,7 +76,7 @@ public class GUIController {
 
     @FXML
     private void reloadButtonPressed() {
-        tableController.reloadTable();
+        tableController.reloadTable(true);
     }
 
     @FXML

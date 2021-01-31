@@ -35,7 +35,6 @@ public class PathController {
         this.homePath = disk;
 
         // TODO
-        tableController.clearTable();
         tableController.setPath(path);
         updatePathTextField();
     }
@@ -71,7 +70,11 @@ public class PathController {
             }
         }
 
-        path = path.substring(0, lastDirIndex);
+        if(lastDirIndex == 0) {
+            path = "/";
+        } else {
+            path = path.substring(0, lastDirIndex);
+        }
 
         tableController.setPath(path);
         updatePathTextField();
